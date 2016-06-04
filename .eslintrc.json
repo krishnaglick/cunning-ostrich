@@ -1,0 +1,25 @@
+{
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 7
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "indent": [
+      "error",
+      2
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "strict": 0,
+    "no-console": [2, { "allow": ["warn", "error", "log"] }]
+  }
+}

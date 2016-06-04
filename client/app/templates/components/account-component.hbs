@@ -1,0 +1,24 @@
+
+<div class="ui form segment" style="overflow: hidden;">
+  <div class="field">
+    <h2 class="ui header">
+      Login
+    </h2>
+  </div>
+  <div class="field">
+    <div class="ui left icon input user">
+      {{input type="text" value=model.email placeholder="Username" enter="login" autofocus="autofocus"}}
+      <i class="user icon"></i>
+    </div>
+  </div>
+  <div class="field">
+    <div class="ui left icon input lock">
+      {{input type="text" value=model.password placeholder="Password" enter="login"}}
+      <i class="lock icon"></i>
+    </div>
+  </div>
+  <div class="field" style='float: right;'>
+    <button type="button" class="ui inverted green button" {{action "login"}}>Login</button>
+    <button type="button" class="ui inverted blue button" {{action "register"}}>Register</button>
+  </div>
+</div>

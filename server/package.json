@@ -1,0 +1,41 @@
+{
+  "author": "Krishna Glick",
+  "name": "cunning-ostrich-backend",
+  "description": "The backend for cunning-ostrich",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=4.5.2"
+  },
+  "dependencies": {
+    "actionhero": "^13.4.1",
+    "babel-cli": "^6.9.0",
+    "babel-core": "^6.9.1",
+    "babel-plugin-transform-runtime": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-runtime": "^6.9.2",
+    "bcrypt": "^0.8.6",
+    "bluebird": "^3.4.0",
+    "globby": "^4.1.0",
+    "jsonwebtoken": "^7.0.0",
+    "lodash": "^4.13.1",
+    "pg-promise": "^4.3.5",
+    "ws": "^1.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.5.3",
+    "should": "^9.0.0"
+  },
+  "scripts": {
+    "start": "node node_modules/actionhero/bin/actionhero start",
+    "babel": "node node_modules/babel-cli/bin/babel-node  --max_old_space_size=8192 --harmony ./node_modules/actionhero/bin/actionhero",
+    "actionhero": "actionhero",
+    "dbInit": "node utility/dbInit.js",
+    "migrateDown": "node utility/migrate.js migrations/structure down",
+    "migrateUp": "node utility/migrate.js migrations/structure up",
+    "migrate": "npm run migrateDown & npm run migrateUp",
+    "seed": "node utility/migrate.js migrations/data up",
+    "refreshDB": "npm run migrate & npm run seed",
+    "test": "SET NODE_ENV=test & mocha"
+  }
+}

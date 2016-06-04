@@ -1,0 +1,15 @@
+
+<div class='ui menu' style='margin-bottom: 10px;'>
+  {{#if session.isAuthenticated}}
+    {{#link-to 'houses' class='item'}}
+      <i class='home icon'></i> Houses
+    {{/link-to}}
+    <a class='item' {{action 'logout'}}>
+      <i class='sign out icon'></i> Logout
+    </a>
+  {{else}}
+    {{#link-to 'login' class='item'}}
+      <i class='sign in icon'></i> Login
+    {{/link-to}}
+  {{/if}}
+</div>

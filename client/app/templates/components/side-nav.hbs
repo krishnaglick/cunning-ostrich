@@ -1,0 +1,12 @@
+
+<div class="ui segment">
+  {{#each links as |link|}}
+    {{#if link.options.header}}
+      <h3 class="ui header">{{link.text}}</h3>
+    {{else}}
+      {{#link-to link.options.linkTo}}
+      <div><a>{{link.text}}</a></div>
+      {{/link-to}}
+    {{/if}}
+  {{/each}}
+</div>

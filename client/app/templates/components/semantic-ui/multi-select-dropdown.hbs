@@ -1,0 +1,22 @@
+
+<div class="ui fluid search dropdown selection multiple">
+  <select multiple="">
+  {{#each model as |option|}}
+    <option value="{{option}}">{{option}}</option>
+  {{/each}}
+  </select>
+  <i class="dropdown icon"></i>
+  {{#each activeSelections as |selection|}}
+    <a class="ui label transition visible" model-value="{{selection}}" style="display: inline-block !important;">
+      <span>{{selection}}</span>
+      <i class="delete icon"></i>
+    </a>
+  {{/each}}
+  <input class="search" autocomplete="off" tabindex="0" style="width: 2.1428em;" />
+  <div class="default text">{{defaultValue}}</div>
+  <div class="menu transition hidden" tabindex="1">
+  {{#each model as |option|}}
+    <div class="item" model-value="{{option}}">{{option}}</div>
+  {{/each}}
+  </div>
+</div>
