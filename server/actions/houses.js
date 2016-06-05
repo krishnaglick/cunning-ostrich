@@ -1,9 +1,8 @@
-
 'use strict';
 
 exports.action = {
-  name:                   'restore',
-  description:            'restore',
+  name:                   'houses',
+  description:            'houses',
   blockedConnectionTypes: [],
   outputExample:          {},
   matchExtensionMimeType: false,
@@ -14,8 +13,12 @@ exports.action = {
   inputs: {},
 
   run: async function(api, data, next) {
-    //If it gets here the user's auth token is still valid.
-    data.response.authenticated = true;
-    next();
+    try {
+      data.response = await api.helpers.getHouses(data.email);
+      next();
+    }
+    catch(err) {
+      next(err);
+    }
   }
 };

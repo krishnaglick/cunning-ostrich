@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS houses (
   email     TEXT NOT NULL,
 
   name      TEXT NOT NULL,
-  data      JSONB NOT NULL,
+  house     JSONB NOT NULL,
 
   -- Keys
   CONSTRAINT houses_pk PRIMARY KEY (id),

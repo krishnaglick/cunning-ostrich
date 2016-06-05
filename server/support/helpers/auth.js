@@ -3,14 +3,14 @@
 
 const jwt = require('jsonwebtoken');
 
-exports.validateToken = function({email, token}) {
+exports.validateToken = async function({email, token}) {
   return new this.bluebird.Promise((res, rej) => {
     jwt.verify(token, this.config.general.serverToken, (err, payload) => {
       if(err) return rej(err);
       if(payload.exp > Date.now())
         return rej(new Error('Token expired!'));
       if(payload.email === email)
-        return res(payload.email);
+        return res(true);
       else
         rej(new Error('Token/User Mismatch'));
     });

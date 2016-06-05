@@ -5,6 +5,7 @@ import config from '../config/environment';
 
 export default Base.extend({
   router: Ember.inject.service('-routing'),
+  session: Ember.inject.service(),
 
   restore({email, token}) {
     return new Ember.RSVP.Promise((res, rej) => {
@@ -15,14 +16,9 @@ export default Base.extend({
           data: { email, token }
         })
         .then((response) => {
-          Ember.run(() => {
-            if(response.authenticated) {
-              res({ email, token });
-            }
-            else {
-              rej(response.message);
-            }
-          });
+          if(!response.authenticated)
+            return rej(response.message);
+          res({ email, token });
         },
         (err) => {
           this.get('router').transitionTo('login');
@@ -45,28 +41,22 @@ export default Base.extend({
         contentType: 'application/json'
       })
       .then((response) => {
-        Ember.run(() => {
-          if(response.token) {
-            res({
-              token: response.token,
-              email
-            });
-          }
-          else {
-            rej(response.error);
-          }
+        if(!response.token) {
+          return rej(response.error);
+        }
+        this.set('session.token', response.token);
+        this.set('session.email', email);
+        res({
+          token: response.token,
+          email
         });
       },
-      (xhr) => {
-        Ember.run(() => {
-          rej(xhr.responseJSON.message);
-        });
-      });
+      (xhr) => rej(xhr.responseJSON.message));
     });
   },
 
   invalidate() {
-    return new Ember.RSVP.Promise((res, rej) => {
+    return new Ember.RSVP.Promise((res) => {
       this.set('session.token', null);
       this.set('session.email', null);
       res();
