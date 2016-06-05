@@ -3,6 +3,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   session: Ember.inject.service(),
+  router: Ember.inject.service('-router'),
   actions: {
     logout() {
       try {
@@ -11,7 +12,7 @@ export default Ember.Component.extend({
       catch(x) {
         debugger;
       }
-      //this.get('router').transitionTo('login');
+      this.get('router').transitionTo('login');
     }
   }
 });

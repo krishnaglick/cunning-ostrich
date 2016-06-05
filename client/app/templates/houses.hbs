@@ -1,6 +1,17 @@
 
 <div class="ui stackable centered grid">
+  <div class="three wide column">
+    {{side-nav}}
+  </div>
   <div class="eight wide column">
-    {{house-component model=model}}
+    {{#liquid-if mode.manageHouses}}
+      {{manage-houses model=model}}
+    {{/liquid-if}}
+    {{#liquid-if mode.addHouse}}
+      {{add-house model=null}}
+    {{/liquid-if}}
+    {{#liquid-if mode.editHouse}}
+      {{add-house model=activeHouse}}
+    {{/liquid-if}}
   </div>
 </div>

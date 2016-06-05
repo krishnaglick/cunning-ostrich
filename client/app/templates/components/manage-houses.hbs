@@ -1,0 +1,10 @@
+
+<div class="ui purple segment">
+  <div class="ui list">
+  {{#each model as |house|}}
+    <div class="item">
+      {{house.name}} | <i class="edit icon" {{action 'editHouse' house}}></i>
+    </div>
+  {{/each}}
+  </div>
+</div>

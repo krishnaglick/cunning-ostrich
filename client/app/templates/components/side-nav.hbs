@@ -1,12 +1,10 @@
 
-<div class="ui segment">
-  {{#each links as |link|}}
-    {{#if link.options.header}}
-      <h3 class="ui header">{{link.text}}</h3>
-    {{else}}
-      {{#link-to link.options.linkTo}}
-      <div><a>{{link.text}}</a></div>
-      {{/link-to}}
-    {{/if}}
-  {{/each}}
+<div class="ui vertical menu">
+  <h3 class="ui header">Houses</h3>
+  <div class="active item" {{onclick 'manageHouses'}}>
+    <a>Manage Houses</a>
+  </div>
+  <div class="active item" {{onclick 'addHouse'}}>
+    <a>Add House</a>
+  </div>
 </div>
