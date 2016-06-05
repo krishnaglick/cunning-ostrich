@@ -1,2 +1,101 @@
 
+<div class="ui form segment">
+  <div class="field">
+    <h3 class="ui header">Add a Home</h3>
+  </div>
+  <div class="field">
+    <div class="ui input">
+      {{input type="text" placeholder="Home Name" value=model.name}}
+    </div>
+  </div>
+  <div class="field">
+    <h4 class="ui header">The Home</h4>
+  </div>
+  <div class="ui form segment" id="theHome">
+    <div class="three fields">
+      <div class="field">
+        {{input type="number" placeholder="Square Footage" value=model.house.squareFeet}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.squareFeetRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="number" placeholder="Bedrooms" value=model.house.beds}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.bedsRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="number" placeholder="Bathrooms" value=model.house.baths}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.bathsRating type="heart"}}
+      </div>
+    </div>
 
+    <div class="two fields">
+      <div class="field">
+        {{input type="text" placeholder="Interior Walls Condition" value=model.house.interiorWalls}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.interiorWallsRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="text" placeholder="Exterior Walls Condition" value=model.house.exteriorWalls}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.exteriorWallsRating type="heart"}}
+      </div>
+    </div>
+
+    <div class="three fields">
+      <div class="field">
+        {{input type="text" placeholder="Garage" value=model.house.garage}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.garageRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="text" placeholder="Closet/Storage Space" value=model.house.storageSpace}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.storageSpaceRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="text" placeholder="Fireplace" value=model.house.fireplace}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.fireplaceRating type="heart"}}
+      </div>
+    </div>
+
+    <div class="three fields">
+      <div class="field">
+        {{input type="text" placeholder="Patio/Deck" value=model.house.patio}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.patioRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="text" placeholder="Lawn/Yard" value=model.house.lawn}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.lawnRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="text" placeholder="Fence" value=model.house.fence}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.fenceRating type="heart"}}
+      </div>
+    </div>
+
+    <div class="three fields">
+      <div class="field">
+        {{input type="text" placeholder="Windows & Screens" value=model.house.windows}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.windowsRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="text" placeholder="Roof" value=model.house.roof}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.roofRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="text" placeholder="Gutters & Downspouts" value=model.house.gutters}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.guttersRating type="heart"}}
+      </div>
+    </div>
+
+    <div class="three fields">
+      <div class="field">
+        {{input type="text" placeholder="Energy Efficiency" value=model.house.energy}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.energyRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="text" placeholder="Cable & Internet" value=model.house.providers}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.providersRating type="heart"}}
+      </div>
+      <div class="field">
+        {{input type="text" placeholder="Basement" value=model.house.windows}}
+        {{semantic-ui/heart-rating maxRating=3 rating=model.house.basementRating type="heart"}}
+      </div>
+    </div>
+  </div>
+</div>

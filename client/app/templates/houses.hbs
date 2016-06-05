@@ -1,9 +1,17 @@
 
 <div class="ui stackable centered grid">
   <div class="three wide column">
-    {{side-nav}}
+    <div class="ui vertical menu">
+      <h3 class="ui header item">Houses</h3>
+      <a class="active item manageHouse" {{action 'manageHouses'}}>
+        Manage Houses
+      </a>
+      <a class="item addHouse" {{action 'addHouse'}}>
+        Add House
+      </a>
+    </div>
   </div>
-  <div class="eight wide column">
+  <div class="nine wide column">
     {{#liquid-if mode.manageHouses}}
       {{manage-houses model=model}}
     {{/liquid-if}}
