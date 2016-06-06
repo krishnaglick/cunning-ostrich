@@ -27,7 +27,7 @@
     "should": "^9.0.0"
   },
   "scripts": {
-    "start": "node node_modules/actionhero/bin/actionhero start",
+    "start": "node node_modules/babel-cli/bin/babel-node  --max_old_space_size=8192 --harmony ./node_modules/actionhero/bin/actionhero startCluster",
     "babel": "node node_modules/babel-cli/bin/babel-node  --max_old_space_size=8192 --harmony ./node_modules/actionhero/bin/actionhero",
     "actionhero": "actionhero",
     "dbInit": "node utility/dbInit.js",
