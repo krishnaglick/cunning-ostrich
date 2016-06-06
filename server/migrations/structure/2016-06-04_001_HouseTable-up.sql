@@ -5,8 +5,6 @@ CREATE TABLE IF NOT EXISTS houses (
   id        UUID DEFAULT uuid_generate_v1mc(),
 
   email     TEXT NOT NULL,
-
-  name      TEXT NOT NULL,
   house     JSONB NOT NULL,
 
   -- Keys

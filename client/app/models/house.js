@@ -2,10 +2,13 @@
 import DS from 'ember-data';
 
 export default DS.Model.extend({
-  name: DS.attr('string'),
   house: DS.attr({
     defaultValue() {
-      return {};
+      return {
+        neighborhood: {},
+        schools: {},
+        convenience: {}
+      };
     }
   })
 });

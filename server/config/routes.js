@@ -4,11 +4,18 @@ exports['default'] = {
     return {
 
       get: [
-
+        { path: '/houses', action: 'getHouses' },
+        { path: '/houses/:id', action: 'getHouses' }
       ],
 
       post: [
+        { path: '/houses', action: 'saveHouses' },
+        { path: '/houses/:id', action: 'saveHouses' }
+      ],
 
+      patch: [
+        { path: '/houses', action: 'saveHouses' },
+        { path: '/houses/:id', action: 'saveHouses' }
       ],
 
       all: [

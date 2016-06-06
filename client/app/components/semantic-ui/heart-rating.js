@@ -2,14 +2,15 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  maxRating: 5,
-  type: '',
   didInsertElement() {
-    const type = this.get('type');
-    Ember.$(`.ui.rating${type ? `.${type}` : type}`).rating({
-      onRate: (rating) => {
-        this.set('rating', rating);
-      }
+    Ember.run(() => {
+      Ember.$(this.get('element')).rating({
+        onRate: (rating) => {
+          this.set('rating', rating);
+        },
+        initialRating: this.get('rating') ||0,
+        maxRating: this.get('maxRating') || 5
+      });
     });
   }
 });

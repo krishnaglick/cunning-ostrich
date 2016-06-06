@@ -1,8 +1,9 @@
+
 'use strict';
 
 exports.action = {
-  name:                   'houses',
-  description:            'houses',
+  name:                   'getHouses',
+  description:            'Gets all the houses for a specific user.',
   blockedConnectionTypes: [],
   outputExample:          {},
   matchExtensionMimeType: false,
@@ -10,11 +11,15 @@ exports.action = {
   toDocument:             true,
   middleware:             ['auth'],
 
-  inputs: {},
+  inputs: {
+    id: { required: false }
+  },
 
   run: async function(api, data, next) {
     try {
-      data.response = await api.helpers.getHouses(data.email);
+      data.response = await api.helpers.getHouses(data.email, data.params.id);
+      if(data.params.id) // :/
+        data.response = data.response[0];
       next();
     }
     catch(err) {

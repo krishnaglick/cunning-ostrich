@@ -27,11 +27,11 @@ export default Ember.Controller.extend({
       this.navMode('addHouse');
     },
     editHouse(house) {
-      this.set('activeHouse', house);
-
       this.set('mode.manageHouses', false);
       this.set('mode.addHouse', false);
       this.set('mode.editHouse', true);
+
+      this.set('activeHouse', house.id);
 
       this.navMode('manageHouses');
     }
