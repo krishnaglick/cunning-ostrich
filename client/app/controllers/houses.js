@@ -15,25 +15,36 @@ export default Ember.Controller.extend({
   //hur
   actions: {
     manageHouses() {
-      this.set('mode.manageHouses', true);
-      this.set('mode.addHouse', false);
-      this.set('mode.editHouse', false);
-      this.navMode('manageHouses');
+      Ember.run(() => {
+        this.set('mode.manageHouses', true);
+        this.set('mode.addHouse', false);
+        this.set('mode.editHouse', false);
+        this.navMode('manageHouses');
+      });
     },
     addHouse() {
-      this.set('mode.manageHouses', false);
-      this.set('mode.addHouse', true);
-      this.set('mode.editHouse', false);
-      this.navMode('addHouse');
+      Ember.run(() => {
+        this.set('mode.manageHouses', false);
+        this.set('mode.addHouse', true);
+        this.set('mode.editHouse', false);
+
+        this.set('activeHouse', { house: {
+          neighborhood: {},
+          schools: {},
+          convenience: {}
+        }});
+
+        this.navMode('addHouse');
+      });
     },
     editHouse(house) {
-      this.set('mode.manageHouses', false);
-      this.set('mode.addHouse', false);
-      this.set('mode.editHouse', true);
-
-      this.set('activeHouse', house.id);
-
-      this.navMode('manageHouses');
+      Ember.run(() => {
+        this.set('activeHouse', house);
+        this.navMode('manageHouses');
+        this.set('mode.manageHouses', false);
+        this.set('mode.addHouse', false);
+        this.set('mode.editHouse', true);
+      });
     }
   }
 });

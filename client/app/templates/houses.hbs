@@ -13,7 +13,7 @@
   </div>
   <div class="nine wide column">
     {{#liquid-if mode.manageHouses}}
-      <div class="ui purple segment">
+      <div class="ui purple form segment">
         <div class="ui list">
         {{#liquid-unless model}}
           No houses!
@@ -26,11 +26,8 @@
         </div>
       </div>
     {{/liquid-if}}
-    {{#liquid-if mode.addHouse}}
-      {{add-house}}
-    {{/liquid-if}}
-    {{#liquid-if mode.editHouse}}
-      {{add-house houseID=activeHouse}}
-    {{/liquid-if}}
+    {{#liquid-unless mode.manageHouses}}
+      {{add-house model=activeHouse}}
+    {{/liquid-unless}}
   </div>
 </div>

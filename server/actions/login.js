@@ -20,7 +20,10 @@ exports.action = {
 
   run: async function(api, data, next) {
     try {
-      await api.helpers.login(data.params);
+      const validUser = await api.helpers.validatePassword(data.params);
+      if(!validUser) {
+        throw new Error('Invalid username or password');
+      }
       const token = await api.helpers.generateToken(data.params);
       data.response.token = token;
       next();
