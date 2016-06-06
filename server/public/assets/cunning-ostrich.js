@@ -208,28 +208,13 @@ define('cunning-ostrich/components/account-component', ['exports', 'ember'], fun
 });
 define('cunning-ostrich/components/add-house', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Component.extend({
-    init: function init() {
-      var _this = this,
-          _arguments = arguments;
-
-      _ember['default'].run(function () {
-        var id = _this.get('houseID');
-        if (_ember['default'].isEmpty(id)) {
-          var record = _this.get('store').createRecord('house');
-          _this.set('model', record);
-        } else {
-          _this.get('store').findRecord('house', id).then(function (record) {
-            _this.set('model', record);
-          });
-        }
-        _this._super.apply(_this, _arguments);
-      });
-    },
+    store: _ember['default'].inject.service(),
     actions: {
       collapse: function collapse() {
         _ember['default'].$(this.get('element')).slideToggle();
       },
       save: function save() {
+        if (!this.model.save) this.set('model', this.get('store').createRecord('house', this.get('model')));
         this.model.save();
       }
     }
@@ -808,23 +793,6 @@ define('cunning-ostrich/components/nav-bar', ['exports', 'ember'], function (exp
     }
   });
 });
-define('cunning-ostrich/components/semantic-ui/heart-rating', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Component.extend({
-    didInsertElement: function didInsertElement() {
-      var _this = this;
-
-      _ember['default'].run(function () {
-        _ember['default'].$(_this.get('element')).rating({
-          onRate: function onRate(rating) {
-            _this.set('rating', rating);
-          },
-          initialRating: _this.get('rating') || 0,
-          maxRating: _this.get('maxRating') || 5
-        });
-      });
-    }
-  });
-});
 define('cunning-ostrich/components/semantic-ui/multi-select-dropdown', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Component.extend({
     activeSelection: [],
@@ -837,6 +805,23 @@ define('cunning-ostrich/components/semantic-ui/multi-select-dropdown', ['exports
           this.activeSelection = _ember['default'].$('.ui.dropdown').dropdown('get value') || [];
         }
       });
+    }
+  });
+});
+define('cunning-ostrich/components/semantic-ui/rating-component', ['exports', 'ember'], function (exports, _ember) {
+  exports['default'] = _ember['default'].Component.extend({
+    didInsertElement: function didInsertElement() {
+      var _this = this;
+
+      _ember['default'].$(this.get('element')).rating({
+        initialRating: this.get('rating') || 0,
+        maxRating: this.get('maxRating') || 5,
+        onRate: function onRate(rating, isInit) {
+          if (!isInit) _this.set('rating', rating);
+        },
+        clearable: true
+      });
+      this._super.apply(this, arguments);
     }
   });
 });
@@ -978,25 +963,42 @@ define('cunning-ostrich/controllers/houses', ['exports', 'ember'], function (exp
 
     actions: {
       manageHouses: function manageHouses() {
-        this.set('mode.manageHouses', true);
-        this.set('mode.addHouse', false);
-        this.set('mode.editHouse', false);
-        this.navMode('manageHouses');
+        var _this = this;
+
+        _ember['default'].run(function () {
+          _this.set('mode.manageHouses', true);
+          _this.set('mode.addHouse', false);
+          _this.set('mode.editHouse', false);
+          _this.navMode('manageHouses');
+        });
       },
       addHouse: function addHouse() {
-        this.set('mode.manageHouses', false);
-        this.set('mode.addHouse', true);
-        this.set('mode.editHouse', false);
-        this.navMode('addHouse');
+        var _this2 = this;
+
+        _ember['default'].run(function () {
+          _this2.set('mode.manageHouses', false);
+          _this2.set('mode.addHouse', true);
+          _this2.set('mode.editHouse', false);
+
+          _this2.set('activeHouse', { house: {
+              neighborhood: {},
+              schools: {},
+              convenience: {}
+            } });
+
+          _this2.navMode('addHouse');
+        });
       },
       editHouse: function editHouse(house) {
-        this.set('mode.manageHouses', false);
-        this.set('mode.addHouse', false);
-        this.set('mode.editHouse', true);
+        var _this3 = this;
 
-        this.set('activeHouse', house.id);
-
-        this.navMode('manageHouses');
+        _ember['default'].run(function () {
+          _this3.set('activeHouse', house);
+          _this3.navMode('manageHouses');
+          _this3.set('mode.manageHouses', false);
+          _this3.set('mode.addHouse', false);
+          _this3.set('mode.editHouse', true);
+        });
       }
     }
   });
@@ -1361,7 +1363,7 @@ define("cunning-ostrich/templates/application", ["exports"], function (exports) 
           "name": "missing-wrapper",
           "problems": ["wrong-type", "multiple-nodes"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -1412,7 +1414,7 @@ define("cunning-ostrich/templates/components/account-component", ["exports"], fu
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -1553,7 +1555,7 @@ define("cunning-ostrich/templates/components/add-house", ["exports"], function (
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -2770,7 +2772,7 @@ define("cunning-ostrich/templates/components/add-house", ["exports"], function (
         morphs[95] = dom.createMorphAt(dom.childAt(element62, [29]), 1, 1);
         return morphs;
       },
-      statements: [["inline", "input", [], ["type", "text", "placeholder", "Home Name", "value", ["subexpr", "@mut", [["get", "model.house.name", ["loc", [null, [9, 58], [9, 74]]]]], [], []]], ["loc", [null, [9, 8], [9, 76]]]], ["element", "action", ["save"], [], ["loc", [null, [13, 83], [13, 100]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 5, "rating", ["subexpr", "@mut", [["get", "model.house.overall", ["loc", [null, [19, 66], [19, 85]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [19, 20], [19, 111]]]], ["inline", "input", [], ["type", "number", "placeholder", "Square Footage", "value", ["subexpr", "@mut", [["get", "model.house.squareFeet", ["loc", [null, [27, 65], [27, 87]]]]], [], []]], ["loc", [null, [27, 8], [27, 89]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.squareFeetRating", ["loc", [null, [28, 54], [28, 82]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [28, 8], [28, 108]]]], ["inline", "input", [], ["type", "number", "placeholder", "Bedrooms", "value", ["subexpr", "@mut", [["get", "model.house.beds", ["loc", [null, [31, 59], [31, 75]]]]], [], []]], ["loc", [null, [31, 8], [31, 77]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.bedsRating", ["loc", [null, [32, 54], [32, 76]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [32, 8], [32, 102]]]], ["inline", "input", [], ["type", "number", "placeholder", "Bathrooms", "value", ["subexpr", "@mut", [["get", "model.house.baths", ["loc", [null, [35, 60], [35, 77]]]]], [], []]], ["loc", [null, [35, 8], [35, 79]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.bathsRating", ["loc", [null, [36, 54], [36, 77]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [36, 8], [36, 103]]]], ["inline", "input", [], ["type", "text", "placeholder", "Interior Walls Condition", "value", ["subexpr", "@mut", [["get", "model.house.interiorWalls", ["loc", [null, [42, 73], [42, 98]]]]], [], []]], ["loc", [null, [42, 8], [42, 100]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.interiorWallsRating", ["loc", [null, [43, 54], [43, 85]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [43, 8], [43, 111]]]], ["inline", "input", [], ["type", "text", "placeholder", "Exterior Walls Condition", "value", ["subexpr", "@mut", [["get", "model.house.exteriorWalls", ["loc", [null, [46, 73], [46, 98]]]]], [], []]], ["loc", [null, [46, 8], [46, 100]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.exteriorWallsRating", ["loc", [null, [47, 54], [47, 85]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [47, 8], [47, 111]]]], ["inline", "input", [], ["type", "text", "placeholder", "Garage", "value", ["subexpr", "@mut", [["get", "model.house.garage", ["loc", [null, [53, 55], [53, 73]]]]], [], []]], ["loc", [null, [53, 8], [53, 75]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.garageRating", ["loc", [null, [54, 54], [54, 78]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [54, 8], [54, 104]]]], ["inline", "input", [], ["type", "text", "placeholder", "Closet/Storage Space", "value", ["subexpr", "@mut", [["get", "model.house.storageSpace", ["loc", [null, [57, 69], [57, 93]]]]], [], []]], ["loc", [null, [57, 8], [57, 95]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.storageSpaceRating", ["loc", [null, [58, 54], [58, 84]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [58, 8], [58, 110]]]], ["inline", "input", [], ["type", "text", "placeholder", "Fireplace", "value", ["subexpr", "@mut", [["get", "model.house.fireplace", ["loc", [null, [61, 58], [61, 79]]]]], [], []]], ["loc", [null, [61, 8], [61, 81]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.fireplaceRating", ["loc", [null, [62, 54], [62, 81]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [62, 8], [62, 107]]]], ["inline", "input", [], ["type", "text", "placeholder", "Patio/Deck", "value", ["subexpr", "@mut", [["get", "model.house.patio", ["loc", [null, [68, 59], [68, 76]]]]], [], []]], ["loc", [null, [68, 8], [68, 78]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.patioRating", ["loc", [null, [69, 54], [69, 77]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [69, 8], [69, 103]]]], ["inline", "input", [], ["type", "text", "placeholder", "Lawn/Yard", "value", ["subexpr", "@mut", [["get", "model.house.lawn", ["loc", [null, [72, 58], [72, 74]]]]], [], []]], ["loc", [null, [72, 8], [72, 76]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.lawnRating", ["loc", [null, [73, 54], [73, 76]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [73, 8], [73, 102]]]], ["inline", "input", [], ["type", "text", "placeholder", "Fence", "value", ["subexpr", "@mut", [["get", "model.house.fence", ["loc", [null, [76, 54], [76, 71]]]]], [], []]], ["loc", [null, [76, 8], [76, 73]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.fenceRating", ["loc", [null, [77, 54], [77, 77]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [77, 8], [77, 103]]]], ["inline", "input", [], ["type", "text", "placeholder", "Windows & Screens", "value", ["subexpr", "@mut", [["get", "model.house.windows", ["loc", [null, [83, 66], [83, 85]]]]], [], []]], ["loc", [null, [83, 8], [83, 87]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.windowsRating", ["loc", [null, [84, 54], [84, 79]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [84, 8], [84, 105]]]], ["inline", "input", [], ["type", "text", "placeholder", "Roof", "value", ["subexpr", "@mut", [["get", "model.house.roof", ["loc", [null, [87, 53], [87, 69]]]]], [], []]], ["loc", [null, [87, 8], [87, 71]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.roofRating", ["loc", [null, [88, 54], [88, 76]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [88, 8], [88, 102]]]], ["inline", "input", [], ["type", "text", "placeholder", "Gutters & Downspouts", "value", ["subexpr", "@mut", [["get", "model.house.gutters", ["loc", [null, [91, 69], [91, 88]]]]], [], []]], ["loc", [null, [91, 8], [91, 90]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.guttersRating", ["loc", [null, [92, 54], [92, 79]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [92, 8], [92, 105]]]], ["inline", "input", [], ["type", "text", "placeholder", "Energy Efficiency", "value", ["subexpr", "@mut", [["get", "model.house.energy", ["loc", [null, [98, 66], [98, 84]]]]], [], []]], ["loc", [null, [98, 8], [98, 86]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.energyRating", ["loc", [null, [99, 54], [99, 78]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [99, 8], [99, 104]]]], ["inline", "input", [], ["type", "text", "placeholder", "Cable & Internet", "value", ["subexpr", "@mut", [["get", "model.house.providers", ["loc", [null, [102, 65], [102, 86]]]]], [], []]], ["loc", [null, [102, 8], [102, 88]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.providersRating", ["loc", [null, [103, 54], [103, 81]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [103, 8], [103, 107]]]], ["inline", "input", [], ["type", "text", "placeholder", "Basement", "value", ["subexpr", "@mut", [["get", "model.house.windows", ["loc", [null, [106, 57], [106, 76]]]]], [], []]], ["loc", [null, [106, 8], [106, 78]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.basementRating", ["loc", [null, [107, 54], [107, 80]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [107, 8], [107, 106]]]], ["inline", "input", [], ["type", "text", "placeholder", "Appearance & Condition of Neighborhood", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.condition", ["loc", [null, [118, 87], [118, 121]]]]], [], []]], ["loc", [null, [118, 8], [118, 123]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.conditionRating", ["loc", [null, [119, 54], [119, 94]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [119, 8], [119, 120]]]], ["inline", "input", [], ["type", "text", "placeholder", "Traffic", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.traffic", ["loc", [null, [122, 56], [122, 88]]]]], [], []]], ["loc", [null, [122, 8], [122, 90]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.trafficRating", ["loc", [null, [123, 54], [123, 92]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [123, 8], [123, 118]]]], ["inline", "input", [], ["type", "text", "placeholder", "Noise Level", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.noise", ["loc", [null, [129, 60], [129, 90]]]]], [], []]], ["loc", [null, [129, 8], [129, 92]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.noiseRating", ["loc", [null, [130, 54], [130, 90]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [130, 8], [130, 116]]]], ["inline", "input", [], ["type", "text", "placeholder", "Safety & Security", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.safety", ["loc", [null, [133, 66], [133, 97]]]]], [], []]], ["loc", [null, [133, 8], [133, 99]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.safetyRating", ["loc", [null, [134, 54], [134, 91]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [134, 8], [134, 117]]]], ["inline", "input", [], ["type", "text", "placeholder", "Age Mix of Neighbors", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.ageMix", ["loc", [null, [140, 69], [140, 100]]]]], [], []]], ["loc", [null, [140, 8], [140, 102]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.ageMixRating", ["loc", [null, [141, 54], [141, 91]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [141, 8], [141, 117]]]], ["inline", "input", [], ["type", "text", "placeholder", "Children in Area", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.children", ["loc", [null, [144, 65], [144, 98]]]]], [], []]], ["loc", [null, [144, 8], [144, 100]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.childrenRating", ["loc", [null, [145, 54], [145, 93]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [145, 8], [145, 119]]]], ["inline", "input", [], ["type", "text", "placeholder", "Pet Restrictions", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.petRestrictions", ["loc", [null, [151, 65], [151, 105]]]]], [], []]], ["loc", [null, [151, 8], [151, 107]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.petRestrictionsRating", ["loc", [null, [152, 54], [152, 100]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [152, 8], [152, 126]]]], ["inline", "input", [], ["type", "text", "placeholder", "Parking", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.parking", ["loc", [null, [155, 56], [155, 88]]]]], [], []]], ["loc", [null, [155, 8], [155, 90]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.parkingRating", ["loc", [null, [156, 54], [156, 92]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [156, 8], [156, 118]]]], ["inline", "input", [], ["type", "text", "placeholder", "Zoning", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.zoning", ["loc", [null, [162, 55], [162, 86]]]]], [], []]], ["loc", [null, [162, 8], [162, 88]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.zoningRating", ["loc", [null, [163, 54], [163, 91]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [163, 8], [163, 117]]]], ["inline", "input", [], ["type", "text", "placeholder", "Restrictions & Covenants", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.restrictions", ["loc", [null, [166, 73], [166, 110]]]]], [], []]], ["loc", [null, [166, 8], [166, 112]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.restrictionsRating", ["loc", [null, [167, 54], [167, 97]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [167, 8], [167, 123]]]], ["inline", "input", [], ["type", "text", "placeholder", "Fire Protection", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.fireProtection", ["loc", [null, [173, 64], [173, 103]]]]], [], []]], ["loc", [null, [173, 8], [173, 105]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.fireProtectionRating", ["loc", [null, [174, 54], [174, 99]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [174, 8], [174, 125]]]], ["inline", "input", [], ["type", "text", "placeholder", "Police", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.police", ["loc", [null, [177, 55], [177, 86]]]]], [], []]], ["loc", [null, [177, 8], [177, 88]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.policeRating", ["loc", [null, [178, 54], [178, 91]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [178, 8], [178, 117]]]], ["inline", "input", [], ["type", "text", "placeholder", "Snow Removal", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.snow", ["loc", [null, [184, 61], [184, 90]]]]], [], []]], ["loc", [null, [184, 8], [184, 92]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.snowRating", ["loc", [null, [185, 54], [185, 89]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [185, 8], [185, 115]]]], ["inline", "input", [], ["type", "text", "placeholder", "Garbage Service", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.garbage", ["loc", [null, [188, 64], [188, 96]]]]], [], []]], ["loc", [null, [188, 8], [188, 98]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.garbageRating", ["loc", [null, [189, 54], [189, 92]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [189, 8], [189, 118]]]], ["inline", "input", [], ["type", "text", "placeholder", "Age & Condition", "value", ["subexpr", "@mut", [["get", "model.house.schools.age", ["loc", [null, [200, 64], [200, 87]]]]], [], []]], ["loc", [null, [200, 8], [200, 89]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.ageRating", ["loc", [null, [201, 54], [201, 83]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [201, 8], [201, 109]]]], ["inline", "input", [], ["type", "text", "placeholder", "Reputation", "value", ["subexpr", "@mut", [["get", "model.house.schools.reputation", ["loc", [null, [204, 59], [204, 89]]]]], [], []]], ["loc", [null, [204, 8], [204, 91]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.reputationRating", ["loc", [null, [205, 54], [205, 90]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [205, 8], [205, 116]]]], ["inline", "input", [], ["type", "text", "placeholder", "Teachers", "value", ["subexpr", "@mut", [["get", "model.house.schools.teachers", ["loc", [null, [211, 57], [211, 85]]]]], [], []]], ["loc", [null, [211, 8], [211, 87]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.teachersRating", ["loc", [null, [212, 54], [212, 88]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [212, 8], [212, 114]]]], ["inline", "input", [], ["type", "text", "placeholder", "Test Scores", "value", ["subexpr", "@mut", [["get", "model.house.schools.testScores", ["loc", [null, [215, 60], [215, 90]]]]], [], []]], ["loc", [null, [215, 8], [215, 92]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.testScoresRating", ["loc", [null, [216, 54], [216, 90]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [216, 8], [216, 116]]]], ["inline", "input", [], ["type", "text", "placeholder", "Play Areas", "value", ["subexpr", "@mut", [["get", "model.house.schools.playAreas", ["loc", [null, [222, 59], [222, 88]]]]], [], []]], ["loc", [null, [222, 8], [222, 90]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.playAreasRating", ["loc", [null, [223, 54], [223, 89]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [223, 8], [223, 115]]]], ["inline", "input", [], ["type", "text", "placeholder", "Curriculum", "value", ["subexpr", "@mut", [["get", "model.house.schools.curriculum", ["loc", [null, [226, 59], [226, 89]]]]], [], []]], ["loc", [null, [226, 8], [226, 91]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.curriculumRating", ["loc", [null, [227, 54], [227, 90]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [227, 8], [227, 116]]]], ["inline", "input", [], ["type", "text", "placeholder", "Class Size", "value", ["subexpr", "@mut", [["get", "model.house.schools.classSize", ["loc", [null, [233, 59], [233, 88]]]]], [], []]], ["loc", [null, [233, 8], [233, 90]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.classSizeRating", ["loc", [null, [234, 54], [234, 89]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [234, 8], [234, 115]]]], ["inline", "input", [], ["type", "text", "placeholder", "Busing Distance", "value", ["subexpr", "@mut", [["get", "model.house.schools.bus", ["loc", [null, [237, 64], [237, 87]]]]], [], []]], ["loc", [null, [237, 8], [237, 89]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.busRating", ["loc", [null, [238, 54], [238, 83]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [238, 8], [238, 109]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.supermarket", ["loc", [null, [248, 65], [248, 100]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [248, 19], [248, 126]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.school", ["loc", [null, [251, 61], [251, 91]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [251, 15], [251, 117]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.work", ["loc", [null, [254, 58], [254, 86]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [254, 12], [254, 112]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.shopping", ["loc", [null, [257, 62], [257, 94]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [257, 16], [257, 120]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.childCare", ["loc", [null, [260, 64], [260, 97]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [260, 18], [260, 123]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.hospitals", ["loc", [null, [263, 63], [263, 96]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [263, 17], [263, 122]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.doctor", ["loc", [null, [266, 60], [266, 90]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [266, 14], [266, 116]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.dentist", ["loc", [null, [269, 61], [269, 92]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [269, 15], [269, 118]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.parks", ["loc", [null, [272, 74], [272, 103]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [272, 28], [272, 129]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.restaurants", ["loc", [null, [275, 65], [275, 100]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [275, 19], [275, 126]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.entertainment", ["loc", [null, [278, 67], [278, 104]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [278, 21], [278, 130]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.church", ["loc", [null, [281, 70], [281, 100]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [281, 24], [281, 126]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.airport", ["loc", [null, [284, 61], [284, 92]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [284, 15], [284, 118]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.highways", ["loc", [null, [287, 62], [287, 94]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [287, 16], [287, 120]]]], ["inline", "semantic-ui/heart-rating", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.publicTransit", ["loc", [null, [290, 68], [290, 105]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [290, 22], [290, 131]]]]],
+      statements: [["inline", "input", [], ["type", "text", "placeholder", "Home Name", "value", ["subexpr", "@mut", [["get", "model.house.name", ["loc", [null, [9, 58], [9, 74]]]]], [], []]], ["loc", [null, [9, 8], [9, 76]]]], ["element", "action", ["save"], [], ["loc", [null, [13, 83], [13, 100]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 5, "rating", ["subexpr", "@mut", [["get", "model.house.overall", ["loc", [null, [19, 70], [19, 89]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [19, 20], [19, 115]]]], ["inline", "input", [], ["type", "number", "placeholder", "Square Footage", "value", ["subexpr", "@mut", [["get", "model.house.squareFeet", ["loc", [null, [27, 65], [27, 87]]]]], [], []]], ["loc", [null, [27, 8], [27, 89]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.squareFeetRating", ["loc", [null, [28, 58], [28, 86]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [28, 8], [28, 112]]]], ["inline", "input", [], ["type", "number", "placeholder", "Bedrooms", "value", ["subexpr", "@mut", [["get", "model.house.beds", ["loc", [null, [31, 59], [31, 75]]]]], [], []]], ["loc", [null, [31, 8], [31, 77]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.bedsRating", ["loc", [null, [32, 58], [32, 80]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [32, 8], [32, 106]]]], ["inline", "input", [], ["type", "number", "placeholder", "Bathrooms", "value", ["subexpr", "@mut", [["get", "model.house.baths", ["loc", [null, [35, 60], [35, 77]]]]], [], []]], ["loc", [null, [35, 8], [35, 79]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.bathsRating", ["loc", [null, [36, 58], [36, 81]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [36, 8], [36, 107]]]], ["inline", "input", [], ["type", "text", "placeholder", "Interior Walls Condition", "value", ["subexpr", "@mut", [["get", "model.house.interiorWalls", ["loc", [null, [42, 73], [42, 98]]]]], [], []]], ["loc", [null, [42, 8], [42, 100]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.interiorWallsRating", ["loc", [null, [43, 58], [43, 89]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [43, 8], [43, 115]]]], ["inline", "input", [], ["type", "text", "placeholder", "Exterior Walls Condition", "value", ["subexpr", "@mut", [["get", "model.house.exteriorWalls", ["loc", [null, [46, 73], [46, 98]]]]], [], []]], ["loc", [null, [46, 8], [46, 100]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.exteriorWallsRating", ["loc", [null, [47, 58], [47, 89]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [47, 8], [47, 115]]]], ["inline", "input", [], ["type", "text", "placeholder", "Garage", "value", ["subexpr", "@mut", [["get", "model.house.garage", ["loc", [null, [53, 55], [53, 73]]]]], [], []]], ["loc", [null, [53, 8], [53, 75]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.garageRating", ["loc", [null, [54, 58], [54, 82]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [54, 8], [54, 108]]]], ["inline", "input", [], ["type", "text", "placeholder", "Closet/Storage Space", "value", ["subexpr", "@mut", [["get", "model.house.storageSpace", ["loc", [null, [57, 69], [57, 93]]]]], [], []]], ["loc", [null, [57, 8], [57, 95]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.storageSpaceRating", ["loc", [null, [58, 58], [58, 88]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [58, 8], [58, 114]]]], ["inline", "input", [], ["type", "text", "placeholder", "Fireplace", "value", ["subexpr", "@mut", [["get", "model.house.fireplace", ["loc", [null, [61, 58], [61, 79]]]]], [], []]], ["loc", [null, [61, 8], [61, 81]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.fireplaceRating", ["loc", [null, [62, 58], [62, 85]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [62, 8], [62, 111]]]], ["inline", "input", [], ["type", "text", "placeholder", "Patio/Deck", "value", ["subexpr", "@mut", [["get", "model.house.patio", ["loc", [null, [68, 59], [68, 76]]]]], [], []]], ["loc", [null, [68, 8], [68, 78]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.patioRating", ["loc", [null, [69, 58], [69, 81]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [69, 8], [69, 107]]]], ["inline", "input", [], ["type", "text", "placeholder", "Lawn/Yard", "value", ["subexpr", "@mut", [["get", "model.house.lawn", ["loc", [null, [72, 58], [72, 74]]]]], [], []]], ["loc", [null, [72, 8], [72, 76]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.lawnRating", ["loc", [null, [73, 58], [73, 80]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [73, 8], [73, 106]]]], ["inline", "input", [], ["type", "text", "placeholder", "Fence", "value", ["subexpr", "@mut", [["get", "model.house.fence", ["loc", [null, [76, 54], [76, 71]]]]], [], []]], ["loc", [null, [76, 8], [76, 73]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.fenceRating", ["loc", [null, [77, 58], [77, 81]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [77, 8], [77, 107]]]], ["inline", "input", [], ["type", "text", "placeholder", "Windows & Screens", "value", ["subexpr", "@mut", [["get", "model.house.windows", ["loc", [null, [83, 66], [83, 85]]]]], [], []]], ["loc", [null, [83, 8], [83, 87]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.windowsRating", ["loc", [null, [84, 58], [84, 83]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [84, 8], [84, 109]]]], ["inline", "input", [], ["type", "text", "placeholder", "Roof", "value", ["subexpr", "@mut", [["get", "model.house.roof", ["loc", [null, [87, 53], [87, 69]]]]], [], []]], ["loc", [null, [87, 8], [87, 71]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.roofRating", ["loc", [null, [88, 58], [88, 80]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [88, 8], [88, 106]]]], ["inline", "input", [], ["type", "text", "placeholder", "Gutters & Downspouts", "value", ["subexpr", "@mut", [["get", "model.house.gutters", ["loc", [null, [91, 69], [91, 88]]]]], [], []]], ["loc", [null, [91, 8], [91, 90]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.guttersRating", ["loc", [null, [92, 58], [92, 83]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [92, 8], [92, 109]]]], ["inline", "input", [], ["type", "text", "placeholder", "Energy Efficiency", "value", ["subexpr", "@mut", [["get", "model.house.energy", ["loc", [null, [98, 66], [98, 84]]]]], [], []]], ["loc", [null, [98, 8], [98, 86]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.energyRating", ["loc", [null, [99, 58], [99, 82]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [99, 8], [99, 108]]]], ["inline", "input", [], ["type", "text", "placeholder", "Cable & Internet", "value", ["subexpr", "@mut", [["get", "model.house.providers", ["loc", [null, [102, 65], [102, 86]]]]], [], []]], ["loc", [null, [102, 8], [102, 88]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.providersRating", ["loc", [null, [103, 58], [103, 85]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [103, 8], [103, 111]]]], ["inline", "input", [], ["type", "text", "placeholder", "Basement", "value", ["subexpr", "@mut", [["get", "model.house.windows", ["loc", [null, [106, 57], [106, 76]]]]], [], []]], ["loc", [null, [106, 8], [106, 78]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.basementRating", ["loc", [null, [107, 58], [107, 84]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [107, 8], [107, 110]]]], ["inline", "input", [], ["type", "text", "placeholder", "Appearance & Condition of Neighborhood", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.condition", ["loc", [null, [118, 87], [118, 121]]]]], [], []]], ["loc", [null, [118, 8], [118, 123]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.conditionRating", ["loc", [null, [119, 58], [119, 98]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [119, 8], [119, 124]]]], ["inline", "input", [], ["type", "text", "placeholder", "Traffic", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.traffic", ["loc", [null, [122, 56], [122, 88]]]]], [], []]], ["loc", [null, [122, 8], [122, 90]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.trafficRating", ["loc", [null, [123, 58], [123, 96]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [123, 8], [123, 122]]]], ["inline", "input", [], ["type", "text", "placeholder", "Noise Level", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.noise", ["loc", [null, [129, 60], [129, 90]]]]], [], []]], ["loc", [null, [129, 8], [129, 92]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.noiseRating", ["loc", [null, [130, 58], [130, 94]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [130, 8], [130, 120]]]], ["inline", "input", [], ["type", "text", "placeholder", "Safety & Security", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.safety", ["loc", [null, [133, 66], [133, 97]]]]], [], []]], ["loc", [null, [133, 8], [133, 99]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.safetyRating", ["loc", [null, [134, 58], [134, 95]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [134, 8], [134, 121]]]], ["inline", "input", [], ["type", "text", "placeholder", "Age Mix of Neighbors", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.ageMix", ["loc", [null, [140, 69], [140, 100]]]]], [], []]], ["loc", [null, [140, 8], [140, 102]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.ageMixRating", ["loc", [null, [141, 58], [141, 95]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [141, 8], [141, 121]]]], ["inline", "input", [], ["type", "text", "placeholder", "Children in Area", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.children", ["loc", [null, [144, 65], [144, 98]]]]], [], []]], ["loc", [null, [144, 8], [144, 100]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.childrenRating", ["loc", [null, [145, 58], [145, 97]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [145, 8], [145, 123]]]], ["inline", "input", [], ["type", "text", "placeholder", "Pet Restrictions", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.petRestrictions", ["loc", [null, [151, 65], [151, 105]]]]], [], []]], ["loc", [null, [151, 8], [151, 107]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.petRestrictionsRating", ["loc", [null, [152, 58], [152, 104]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [152, 8], [152, 130]]]], ["inline", "input", [], ["type", "text", "placeholder", "Parking", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.parking", ["loc", [null, [155, 56], [155, 88]]]]], [], []]], ["loc", [null, [155, 8], [155, 90]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.parkingRating", ["loc", [null, [156, 58], [156, 96]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [156, 8], [156, 122]]]], ["inline", "input", [], ["type", "text", "placeholder", "Zoning", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.zoning", ["loc", [null, [162, 55], [162, 86]]]]], [], []]], ["loc", [null, [162, 8], [162, 88]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.zoningRating", ["loc", [null, [163, 58], [163, 95]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [163, 8], [163, 121]]]], ["inline", "input", [], ["type", "text", "placeholder", "Restrictions & Covenants", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.restrictions", ["loc", [null, [166, 73], [166, 110]]]]], [], []]], ["loc", [null, [166, 8], [166, 112]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.restrictionsRating", ["loc", [null, [167, 58], [167, 101]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [167, 8], [167, 127]]]], ["inline", "input", [], ["type", "text", "placeholder", "Fire Protection", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.fireProtection", ["loc", [null, [173, 64], [173, 103]]]]], [], []]], ["loc", [null, [173, 8], [173, 105]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.fireProtectionRating", ["loc", [null, [174, 58], [174, 103]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [174, 8], [174, 129]]]], ["inline", "input", [], ["type", "text", "placeholder", "Police", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.police", ["loc", [null, [177, 55], [177, 86]]]]], [], []]], ["loc", [null, [177, 8], [177, 88]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.policeRating", ["loc", [null, [178, 58], [178, 95]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [178, 8], [178, 121]]]], ["inline", "input", [], ["type", "text", "placeholder", "Snow Removal", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.snow", ["loc", [null, [184, 61], [184, 90]]]]], [], []]], ["loc", [null, [184, 8], [184, 92]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.snowRating", ["loc", [null, [185, 58], [185, 93]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [185, 8], [185, 119]]]], ["inline", "input", [], ["type", "text", "placeholder", "Garbage Service", "value", ["subexpr", "@mut", [["get", "model.house.neighborhood.garbage", ["loc", [null, [188, 64], [188, 96]]]]], [], []]], ["loc", [null, [188, 8], [188, 98]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.neighborhood.garbageRating", ["loc", [null, [189, 58], [189, 96]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [189, 8], [189, 122]]]], ["inline", "input", [], ["type", "text", "placeholder", "Age & Condition", "value", ["subexpr", "@mut", [["get", "model.house.schools.age", ["loc", [null, [200, 64], [200, 87]]]]], [], []]], ["loc", [null, [200, 8], [200, 89]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.ageRating", ["loc", [null, [201, 58], [201, 87]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [201, 8], [201, 113]]]], ["inline", "input", [], ["type", "text", "placeholder", "Reputation", "value", ["subexpr", "@mut", [["get", "model.house.schools.reputation", ["loc", [null, [204, 59], [204, 89]]]]], [], []]], ["loc", [null, [204, 8], [204, 91]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.reputationRating", ["loc", [null, [205, 58], [205, 94]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [205, 8], [205, 120]]]], ["inline", "input", [], ["type", "text", "placeholder", "Teachers", "value", ["subexpr", "@mut", [["get", "model.house.schools.teachers", ["loc", [null, [211, 57], [211, 85]]]]], [], []]], ["loc", [null, [211, 8], [211, 87]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.teachersRating", ["loc", [null, [212, 58], [212, 92]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [212, 8], [212, 118]]]], ["inline", "input", [], ["type", "text", "placeholder", "Test Scores", "value", ["subexpr", "@mut", [["get", "model.house.schools.testScores", ["loc", [null, [215, 60], [215, 90]]]]], [], []]], ["loc", [null, [215, 8], [215, 92]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.testScoresRating", ["loc", [null, [216, 58], [216, 94]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [216, 8], [216, 120]]]], ["inline", "input", [], ["type", "text", "placeholder", "Play Areas", "value", ["subexpr", "@mut", [["get", "model.house.schools.playAreas", ["loc", [null, [222, 59], [222, 88]]]]], [], []]], ["loc", [null, [222, 8], [222, 90]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.playAreasRating", ["loc", [null, [223, 58], [223, 93]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [223, 8], [223, 119]]]], ["inline", "input", [], ["type", "text", "placeholder", "Curriculum", "value", ["subexpr", "@mut", [["get", "model.house.schools.curriculum", ["loc", [null, [226, 59], [226, 89]]]]], [], []]], ["loc", [null, [226, 8], [226, 91]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.curriculumRating", ["loc", [null, [227, 58], [227, 94]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [227, 8], [227, 120]]]], ["inline", "input", [], ["type", "text", "placeholder", "Class Size", "value", ["subexpr", "@mut", [["get", "model.house.schools.classSize", ["loc", [null, [233, 59], [233, 88]]]]], [], []]], ["loc", [null, [233, 8], [233, 90]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.classSizeRating", ["loc", [null, [234, 58], [234, 93]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [234, 8], [234, 119]]]], ["inline", "input", [], ["type", "text", "placeholder", "Busing Distance", "value", ["subexpr", "@mut", [["get", "model.house.schools.bus", ["loc", [null, [237, 64], [237, 87]]]]], [], []]], ["loc", [null, [237, 8], [237, 89]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.schools.busRating", ["loc", [null, [238, 58], [238, 87]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [238, 8], [238, 113]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.supermarket", ["loc", [null, [248, 69], [248, 104]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [248, 19], [248, 130]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.school", ["loc", [null, [251, 65], [251, 95]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [251, 15], [251, 121]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.work", ["loc", [null, [254, 62], [254, 90]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [254, 12], [254, 116]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.shopping", ["loc", [null, [257, 66], [257, 98]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [257, 16], [257, 124]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.childCare", ["loc", [null, [260, 68], [260, 101]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [260, 18], [260, 127]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.hospitals", ["loc", [null, [263, 67], [263, 100]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [263, 17], [263, 126]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.doctor", ["loc", [null, [266, 64], [266, 94]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [266, 14], [266, 120]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.dentist", ["loc", [null, [269, 65], [269, 96]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [269, 15], [269, 122]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.parks", ["loc", [null, [272, 78], [272, 107]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [272, 28], [272, 133]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.restaurants", ["loc", [null, [275, 69], [275, 104]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [275, 19], [275, 130]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.entertainment", ["loc", [null, [278, 71], [278, 108]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [278, 21], [278, 134]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.church", ["loc", [null, [281, 74], [281, 104]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [281, 24], [281, 130]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.airport", ["loc", [null, [284, 65], [284, 96]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [284, 15], [284, 122]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.highways", ["loc", [null, [287, 66], [287, 98]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [287, 16], [287, 124]]]], ["inline", "semantic-ui/rating-component", [], ["maxRating", 3, "rating", ["subexpr", "@mut", [["get", "model.house.convenience.publicTransit", ["loc", [null, [290, 72], [290, 109]]]]], [], []], "class", "ui heart rating"], ["loc", [null, [290, 22], [290, 135]]]]],
       locals: [],
       templates: []
     };
@@ -2784,7 +2786,7 @@ define("cunning-ostrich/templates/components/change-password", ["exports"], func
           "name": "missing-wrapper",
           "problems": ["empty-body"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -2823,7 +2825,7 @@ define("cunning-ostrich/templates/components/edit-house", ["exports"], function 
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -2871,7 +2873,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -2914,7 +2916,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -2958,7 +2960,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -3001,7 +3003,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -3043,7 +3045,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -3088,7 +3090,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.5",
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -3128,7 +3130,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.5",
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -3167,7 +3169,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -3209,7 +3211,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -3252,7 +3254,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
             return {
               meta: {
                 "fragmentReason": false,
-                "revision": "Ember@2.4.5",
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -3292,7 +3294,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
             return {
               meta: {
                 "fragmentReason": false,
-                "revision": "Ember@2.4.5",
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -3331,7 +3333,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.5",
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -3370,7 +3372,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -3409,7 +3411,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -3451,7 +3453,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -3496,7 +3498,7 @@ define("cunning-ostrich/templates/components/liquid-container", ["exports"], fun
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -3541,7 +3543,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.5",
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -3583,7 +3585,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.5",
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -3624,7 +3626,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -3666,7 +3668,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -3709,7 +3711,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
             return {
               meta: {
                 "fragmentReason": false,
-                "revision": "Ember@2.4.5",
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -3751,7 +3753,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
             return {
               meta: {
                 "fragmentReason": false,
-                "revision": "Ember@2.4.5",
+                "revision": "Ember@2.4.6",
                 "loc": {
                   "source": null,
                   "start": {
@@ -3792,7 +3794,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.5",
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -3831,7 +3833,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -3870,7 +3872,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -3912,7 +3914,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -3956,7 +3958,7 @@ define("cunning-ostrich/templates/components/liquid-modal", ["exports"], functio
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -4011,7 +4013,7 @@ define("cunning-ostrich/templates/components/liquid-modal", ["exports"], functio
             "name": "missing-wrapper",
             "problems": ["wrong-type", "multiple-nodes"]
           },
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -4059,7 +4061,7 @@ define("cunning-ostrich/templates/components/liquid-modal", ["exports"], functio
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -4104,7 +4106,7 @@ define("cunning-ostrich/templates/components/liquid-outlet", ["exports"], functi
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.5",
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -4143,7 +4145,7 @@ define("cunning-ostrich/templates/components/liquid-outlet", ["exports"], functi
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -4185,7 +4187,7 @@ define("cunning-ostrich/templates/components/liquid-outlet", ["exports"], functi
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -4227,7 +4229,7 @@ define("cunning-ostrich/templates/components/liquid-outlet", ["exports"], functi
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -4272,7 +4274,7 @@ define("cunning-ostrich/templates/components/liquid-versions", ["exports"], func
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.5",
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -4311,7 +4313,7 @@ define("cunning-ostrich/templates/components/liquid-versions", ["exports"], func
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -4353,7 +4355,7 @@ define("cunning-ostrich/templates/components/liquid-versions", ["exports"], func
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -4395,7 +4397,7 @@ define("cunning-ostrich/templates/components/liquid-versions", ["exports"], func
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -4439,7 +4441,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -4481,7 +4483,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -4523,7 +4525,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.5",
+              "revision": "Ember@2.4.6",
               "loc": {
                 "source": null,
                 "start": {
@@ -4562,7 +4564,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -4601,7 +4603,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -4643,7 +4645,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -4687,7 +4689,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -4727,7 +4729,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -4783,7 +4785,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -4823,7 +4825,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -4864,7 +4866,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -4909,55 +4911,13 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
     };
   })());
 });
-define("cunning-ostrich/templates/components/semantic-ui/heart-rating", ["exports"], function (exports) {
-  exports["default"] = Ember.HTMLBars.template((function () {
-    return {
-      meta: {
-        "fragmentReason": false,
-        "revision": "Ember@2.4.5",
-        "loc": {
-          "source": null,
-          "start": {
-            "line": 1,
-            "column": 0
-          },
-          "end": {
-            "line": 3,
-            "column": 0
-          }
-        },
-        "moduleName": "cunning-ostrich/templates/components/semantic-ui/heart-rating.hbs"
-      },
-      isEmpty: false,
-      arity: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      buildFragment: function buildFragment(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("div");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      buildRenderNodes: function buildRenderNodes() {
-        return [];
-      },
-      statements: [],
-      locals: [],
-      templates: []
-    };
-  })());
-});
 define("cunning-ostrich/templates/components/semantic-ui/multi-select-dropdown", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     var child0 = (function () {
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -5003,7 +4963,7 @@ define("cunning-ostrich/templates/components/semantic-ui/multi-select-dropdown",
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -5062,7 +5022,7 @@ define("cunning-ostrich/templates/components/semantic-ui/multi-select-dropdown",
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -5110,7 +5070,7 @@ define("cunning-ostrich/templates/components/semantic-ui/multi-select-dropdown",
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -5203,6 +5163,48 @@ define("cunning-ostrich/templates/components/semantic-ui/multi-select-dropdown",
     };
   })());
 });
+define("cunning-ostrich/templates/components/semantic-ui/rating-component", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    return {
+      meta: {
+        "fragmentReason": false,
+        "revision": "Ember@2.4.6",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 3,
+            "column": 0
+          }
+        },
+        "moduleName": "cunning-ostrich/templates/components/semantic-ui/rating-component.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes() {
+        return [];
+      },
+      statements: [],
+      locals: [],
+      templates: []
+    };
+  })());
+});
 define("cunning-ostrich/templates/components/ui-checkbox", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
@@ -5211,7 +5213,7 @@ define("cunning-ostrich/templates/components/ui-checkbox", ["exports"], function
           "name": "missing-wrapper",
           "problems": ["multiple-nodes"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -5270,7 +5272,7 @@ define("cunning-ostrich/templates/components/ui-radio", ["exports"], function (e
           "name": "missing-wrapper",
           "problems": ["multiple-nodes"]
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -5329,7 +5331,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -5365,7 +5367,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.5",
+            "revision": "Ember@2.4.6",
             "loc": {
               "source": null,
               "start": {
@@ -5421,7 +5423,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -5444,7 +5446,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
           var el1 = dom.createTextNode("      ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("div");
-          dom.setAttribute(el1, "class", "ui purple segment");
+          dom.setAttribute(el1, "class", "ui purple form segment");
           var el2 = dom.createTextNode("\n        ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("div");
@@ -5481,7 +5483,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.5",
+          "revision": "Ember@2.4.6",
           "loc": {
             "source": null,
             "start": {
@@ -5514,49 +5516,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["content", "add-house", ["loc", [null, [30, 6], [30, 19]]]]],
-        locals: [],
-        templates: []
-      };
-    })();
-    var child2 = (function () {
-      return {
-        meta: {
-          "fragmentReason": false,
-          "revision": "Ember@2.4.5",
-          "loc": {
-            "source": null,
-            "start": {
-              "line": 32,
-              "column": 4
-            },
-            "end": {
-              "line": 34,
-              "column": 4
-            }
-          },
-          "moduleName": "cunning-ostrich/templates/houses.hbs"
-        },
-        isEmpty: false,
-        arity: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        buildFragment: function buildFragment(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("      ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createComment("");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var morphs = new Array(1);
-          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
-          return morphs;
-        },
-        statements: [["inline", "add-house", [], ["houseID", ["subexpr", "@mut", [["get", "activeHouse", ["loc", [null, [33, 26], [33, 37]]]]], [], []]], ["loc", [null, [33, 6], [33, 39]]]]],
+        statements: [["inline", "add-house", [], ["model", ["subexpr", "@mut", [["get", "activeHouse", ["loc", [null, [30, 24], [30, 35]]]]], [], []]], ["loc", [null, [30, 6], [30, 37]]]]],
         locals: [],
         templates: []
       };
@@ -5566,7 +5526,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -5574,7 +5534,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 37,
+            "line": 34,
             "column": 0
           }
         },
@@ -5635,8 +5595,6 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
         dom.appendChild(el2, el3);
         var el3 = dom.createComment("");
         dom.appendChild(el2, el3);
-        var el3 = dom.createComment("");
-        dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("  ");
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
@@ -5653,17 +5611,16 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
         var element5 = dom.childAt(element4, [3]);
         var element6 = dom.childAt(element4, [5]);
         var element7 = dom.childAt(element3, [3]);
-        var morphs = new Array(5);
+        var morphs = new Array(4);
         morphs[0] = dom.createElementMorph(element5);
         morphs[1] = dom.createElementMorph(element6);
         morphs[2] = dom.createMorphAt(element7, 1, 1);
         morphs[3] = dom.createMorphAt(element7, 2, 2);
-        morphs[4] = dom.createMorphAt(element7, 3, 3);
         return morphs;
       },
-      statements: [["element", "action", ["manageHouses"], [], ["loc", [null, [6, 41], [6, 66]]]], ["element", "action", ["addHouse"], [], ["loc", [null, [9, 31], [9, 52]]]], ["block", "liquid-if", [["get", "mode.manageHouses", ["loc", [null, [15, 17], [15, 34]]]]], [], 0, null, ["loc", [null, [15, 4], [28, 18]]]], ["block", "liquid-if", [["get", "mode.addHouse", ["loc", [null, [29, 17], [29, 30]]]]], [], 1, null, ["loc", [null, [29, 4], [31, 18]]]], ["block", "liquid-if", [["get", "mode.editHouse", ["loc", [null, [32, 17], [32, 31]]]]], [], 2, null, ["loc", [null, [32, 4], [34, 18]]]]],
+      statements: [["element", "action", ["manageHouses"], [], ["loc", [null, [6, 41], [6, 66]]]], ["element", "action", ["addHouse"], [], ["loc", [null, [9, 31], [9, 52]]]], ["block", "liquid-if", [["get", "mode.manageHouses", ["loc", [null, [15, 17], [15, 34]]]]], [], 0, null, ["loc", [null, [15, 4], [28, 18]]]], ["block", "liquid-unless", [["get", "mode.manageHouses", ["loc", [null, [29, 21], [29, 38]]]]], [], 1, null, ["loc", [null, [29, 4], [31, 22]]]]],
       locals: [],
-      templates: [child0, child1, child2]
+      templates: [child0, child1]
     };
   })());
 });
@@ -5674,7 +5631,7 @@ define("cunning-ostrich/templates/login", ["exports"], function (exports) {
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.5",
+        "revision": "Ember@2.4.6",
         "loc": {
           "source": null,
           "start": {
@@ -6173,7 +6130,7 @@ catch(err) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("cunning-ostrich/app")["default"].create({"name":"cunning-ostrich","version":"0.0.1+7f4fcd27"});
+  require("cunning-ostrich/app")["default"].create({"name":"cunning-ostrich","version":"0.0.1+a03c6067"});
 }
 
 /* jshint ignore:end */
