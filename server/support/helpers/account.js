@@ -1,7 +1,7 @@
 
 'use strict';
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 exports.register = async function({email, password}) {
   if(!email)
@@ -35,7 +35,7 @@ exports.createUser = async function({email, password}) {
 };
 
 exports.changePassword = async function({email, password, newPassword}) {
-  let validPassword = await this.helpers.decryptPassword({email, password});
+  let validPassword = await this.helpers.validatePassword({email, password});
   if(validPassword) {
     newPassword = await this.helpers.hashPassword(newPassword);
     return await (async () => {
@@ -50,8 +50,8 @@ exports.changePassword = async function({email, password, newPassword}) {
     throw 'Invalid Password!';
 };
 
-exports.decryptPassword = async function({email, password}) {
-  let user = await this.helpers.getUser({email, password});
+exports.validatePassword = async function({email, password}) {
+  let user = await this.helpers.getUser(email);
   if(!user.length)
     throw 'No user exists for this email!';
   user = user[0];

@@ -9,7 +9,7 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "ember build",
+    "build": "npm build --output-path=../server/public",
     "start": "ember s --proxy http://localhost:8089/",
     "test": "ember test"
   },

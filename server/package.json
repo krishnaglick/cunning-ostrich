@@ -14,7 +14,7 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-runtime": "^6.9.2",
-    "bcrypt": "^0.8.6",
+    "bcryptjs": "^2.3.0",
     "bluebird": "^3.4.0",
     "globby": "^4.1.0",
     "jsonwebtoken": "^7.0.0",
@@ -27,7 +27,7 @@
     "should": "^9.0.0"
   },
   "scripts": {
-    "start": "node node_modules/actionhero/bin/actionhero start",
+    "start": "node node_modules/babel-cli/bin/babel-node  --max_old_space_size=8192 --harmony ./node_modules/actionhero/bin/actionhero startCluster",
     "babel": "node node_modules/babel-cli/bin/babel-node  --max_old_space_size=8192 --harmony ./node_modules/actionhero/bin/actionhero",
     "actionhero": "actionhero",
     "dbInit": "node utility/dbInit.js",

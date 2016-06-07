@@ -28,15 +28,3 @@ exports.generateToken = function({email}) {
     );
   });
 };
-
-exports.login = async function({email, password}) {
-  password = this.helpers.decryptPassword({email, password});
-  return this.db.query(`
-    SELECT EXISTS(
-      SELECT 1
-      FROM users
-      WHERE email = \${email}
-      AND password = \${password}
-    );
-  `, {email, password});
-};
