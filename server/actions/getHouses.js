@@ -18,7 +18,7 @@ exports.action = {
   run: async function(api, data, next) {
     try {
       data.response = await api.helpers.getHouses(data.email, data.params.id);
-      if(data.params.id) // :/
+      if(data.response.length === 1)
         data.response = data.response[0];
       next();
     }

@@ -19,8 +19,7 @@ exports.action = {
   run: async function(api, data, next) {
     try {
       await api.helpers.saveHouses(data.email, data.params);
-      if(data.params.id)
-        data.response.id = data.params.id;
+      data.response.id = data.params.id;
       next();
     }
     catch(err) {
