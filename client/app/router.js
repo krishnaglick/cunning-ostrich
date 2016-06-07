@@ -6,12 +6,15 @@ Ember.Route.reopen({
   activate: Ember.on('didTransition', function() {
     this._super.apply(this, arguments);
     document.title = this.get('title') || document.title;
-  }),
-  location: 'hash'
+  })
 });
 
 const Router = Ember.Router.extend({
   location: config.locationType
+});
+
+Router.reopen({
+  location: 'hash'
 });
 
 Router.map(function() {

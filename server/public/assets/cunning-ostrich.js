@@ -1272,6 +1272,10 @@ define('cunning-ostrich/router', ['exports', 'ember', 'cunning-ostrich/config/en
     location: _cunningOstrichConfigEnvironment['default'].locationType
   });
 
+  Router.reopen({
+    location: 'hash'
+  });
+
   Router.map(function () {
     this.route('login');
     this.route('houses');
@@ -1363,7 +1367,7 @@ define("cunning-ostrich/templates/application", ["exports"], function (exports) 
           "name": "missing-wrapper",
           "problems": ["wrong-type", "multiple-nodes"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -1414,7 +1418,7 @@ define("cunning-ostrich/templates/components/account-component", ["exports"], fu
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -1555,7 +1559,7 @@ define("cunning-ostrich/templates/components/add-house", ["exports"], function (
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -2786,7 +2790,7 @@ define("cunning-ostrich/templates/components/change-password", ["exports"], func
           "name": "missing-wrapper",
           "problems": ["empty-body"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -2825,7 +2829,7 @@ define("cunning-ostrich/templates/components/edit-house", ["exports"], function 
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -2873,7 +2877,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -2916,7 +2920,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -2960,7 +2964,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -3003,7 +3007,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -3045,7 +3049,7 @@ define("cunning-ostrich/templates/components/infinity-loader", ["exports"], func
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -3090,7 +3094,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.6",
+              "revision": "Ember@2.4.5",
               "loc": {
                 "source": null,
                 "start": {
@@ -3130,7 +3134,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.6",
+              "revision": "Ember@2.4.5",
               "loc": {
                 "source": null,
                 "start": {
@@ -3169,7 +3173,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -3211,7 +3215,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -3254,7 +3258,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
             return {
               meta: {
                 "fragmentReason": false,
-                "revision": "Ember@2.4.6",
+                "revision": "Ember@2.4.5",
                 "loc": {
                   "source": null,
                   "start": {
@@ -3294,7 +3298,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
             return {
               meta: {
                 "fragmentReason": false,
-                "revision": "Ember@2.4.6",
+                "revision": "Ember@2.4.5",
                 "loc": {
                   "source": null,
                   "start": {
@@ -3333,7 +3337,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.6",
+              "revision": "Ember@2.4.5",
               "loc": {
                 "source": null,
                 "start": {
@@ -3372,7 +3376,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -3411,7 +3415,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -3453,7 +3457,7 @@ define("cunning-ostrich/templates/components/liquid-bind", ["exports"], function
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -3498,7 +3502,7 @@ define("cunning-ostrich/templates/components/liquid-container", ["exports"], fun
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -3543,7 +3547,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.6",
+              "revision": "Ember@2.4.5",
               "loc": {
                 "source": null,
                 "start": {
@@ -3585,7 +3589,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.6",
+              "revision": "Ember@2.4.5",
               "loc": {
                 "source": null,
                 "start": {
@@ -3626,7 +3630,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -3668,7 +3672,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -3711,7 +3715,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
             return {
               meta: {
                 "fragmentReason": false,
-                "revision": "Ember@2.4.6",
+                "revision": "Ember@2.4.5",
                 "loc": {
                   "source": null,
                   "start": {
@@ -3753,7 +3757,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
             return {
               meta: {
                 "fragmentReason": false,
-                "revision": "Ember@2.4.6",
+                "revision": "Ember@2.4.5",
                 "loc": {
                   "source": null,
                   "start": {
@@ -3794,7 +3798,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.6",
+              "revision": "Ember@2.4.5",
               "loc": {
                 "source": null,
                 "start": {
@@ -3833,7 +3837,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -3872,7 +3876,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -3914,7 +3918,7 @@ define("cunning-ostrich/templates/components/liquid-if", ["exports"], function (
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -3958,7 +3962,7 @@ define("cunning-ostrich/templates/components/liquid-modal", ["exports"], functio
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -4013,7 +4017,7 @@ define("cunning-ostrich/templates/components/liquid-modal", ["exports"], functio
             "name": "missing-wrapper",
             "problems": ["wrong-type", "multiple-nodes"]
           },
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -4061,7 +4065,7 @@ define("cunning-ostrich/templates/components/liquid-modal", ["exports"], functio
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -4106,7 +4110,7 @@ define("cunning-ostrich/templates/components/liquid-outlet", ["exports"], functi
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.6",
+              "revision": "Ember@2.4.5",
               "loc": {
                 "source": null,
                 "start": {
@@ -4145,7 +4149,7 @@ define("cunning-ostrich/templates/components/liquid-outlet", ["exports"], functi
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -4187,7 +4191,7 @@ define("cunning-ostrich/templates/components/liquid-outlet", ["exports"], functi
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -4229,7 +4233,7 @@ define("cunning-ostrich/templates/components/liquid-outlet", ["exports"], functi
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -4274,7 +4278,7 @@ define("cunning-ostrich/templates/components/liquid-versions", ["exports"], func
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.6",
+              "revision": "Ember@2.4.5",
               "loc": {
                 "source": null,
                 "start": {
@@ -4313,7 +4317,7 @@ define("cunning-ostrich/templates/components/liquid-versions", ["exports"], func
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -4355,7 +4359,7 @@ define("cunning-ostrich/templates/components/liquid-versions", ["exports"], func
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -4397,7 +4401,7 @@ define("cunning-ostrich/templates/components/liquid-versions", ["exports"], func
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -4441,7 +4445,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -4483,7 +4487,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
             "name": "missing-wrapper",
             "problems": ["wrong-type"]
           },
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -4525,7 +4529,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
           return {
             meta: {
               "fragmentReason": false,
-              "revision": "Ember@2.4.6",
+              "revision": "Ember@2.4.5",
               "loc": {
                 "source": null,
                 "start": {
@@ -4564,7 +4568,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -4603,7 +4607,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -4645,7 +4649,7 @@ define("cunning-ostrich/templates/components/liquid-with", ["exports"], function
           "name": "missing-wrapper",
           "problems": ["wrong-type"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -4689,7 +4693,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -4729,7 +4733,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -4785,7 +4789,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -4825,7 +4829,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -4866,7 +4870,7 @@ define("cunning-ostrich/templates/components/nav-bar", ["exports"], function (ex
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -4917,7 +4921,7 @@ define("cunning-ostrich/templates/components/semantic-ui/multi-select-dropdown",
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -4963,7 +4967,7 @@ define("cunning-ostrich/templates/components/semantic-ui/multi-select-dropdown",
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -5022,7 +5026,7 @@ define("cunning-ostrich/templates/components/semantic-ui/multi-select-dropdown",
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -5070,7 +5074,7 @@ define("cunning-ostrich/templates/components/semantic-ui/multi-select-dropdown",
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -5168,7 +5172,7 @@ define("cunning-ostrich/templates/components/semantic-ui/rating-component", ["ex
     return {
       meta: {
         "fragmentReason": false,
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -5213,7 +5217,7 @@ define("cunning-ostrich/templates/components/ui-checkbox", ["exports"], function
           "name": "missing-wrapper",
           "problems": ["multiple-nodes"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -5272,7 +5276,7 @@ define("cunning-ostrich/templates/components/ui-radio", ["exports"], function (e
           "name": "missing-wrapper",
           "problems": ["multiple-nodes"]
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -5331,7 +5335,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -5367,7 +5371,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
         return {
           meta: {
             "fragmentReason": false,
-            "revision": "Ember@2.4.6",
+            "revision": "Ember@2.4.5",
             "loc": {
               "source": null,
               "start": {
@@ -5423,7 +5427,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -5483,7 +5487,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
       return {
         meta: {
           "fragmentReason": false,
-          "revision": "Ember@2.4.6",
+          "revision": "Ember@2.4.5",
           "loc": {
             "source": null,
             "start": {
@@ -5526,7 +5530,7 @@ define("cunning-ostrich/templates/houses", ["exports"], function (exports) {
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -5631,7 +5635,7 @@ define("cunning-ostrich/templates/login", ["exports"], function (exports) {
         "fragmentReason": {
           "name": "triple-curlies"
         },
-        "revision": "Ember@2.4.6",
+        "revision": "Ember@2.4.5",
         "loc": {
           "source": null,
           "start": {
@@ -6130,7 +6134,7 @@ catch(err) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("cunning-ostrich/app")["default"].create({"name":"cunning-ostrich","version":"0.0.1+a03c6067"});
+  require("cunning-ostrich/app")["default"].create({"name":"cunning-ostrich","version":"0.0.1+f4c8f51e"});
 }
 
 /* jshint ignore:end */
