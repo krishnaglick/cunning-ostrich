@@ -9,9 +9,9 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "ember build",
-    "start": "ember s --proxy http://localhost:8089/",
-    "test": "ember test"
+    "build": "node ./node_modules/ember-cli/bin/ember build",
+    "start": "node ./node_modules/ember-cli/bin/ember s --proxy http://localhost:8089/",
+    "test": "node ./node_modules/ember-cli/bin/ember test"
   },
   "repository": "",
   "engines": {

@@ -13,10 +13,6 @@ const Router = Ember.Router.extend({
   location: config.locationType
 });
 
-Router.reopen({
-  location: 'hash'
-});
-
 Router.map(function() {
   this.route('login');
   this.route('houses');

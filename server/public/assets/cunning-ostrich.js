@@ -1272,10 +1272,6 @@ define('cunning-ostrich/router', ['exports', 'ember', 'cunning-ostrich/config/en
     location: _cunningOstrichConfigEnvironment['default'].locationType
   });
 
-  Router.reopen({
-    location: 'hash'
-  });
-
   Router.map(function () {
     this.route('login');
     this.route('houses');
@@ -6134,7 +6130,7 @@ catch(err) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("cunning-ostrich/app")["default"].create({"name":"cunning-ostrich","version":"0.0.1+f4c8f51e"});
+  require("cunning-ostrich/app")["default"].create({"name":"cunning-ostrich","version":"0.0.1+1ec4dc03"});
 }
 
 /* jshint ignore:end */
